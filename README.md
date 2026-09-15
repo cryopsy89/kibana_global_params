@@ -16,6 +16,7 @@
    KIBANA_URL=https://your-kibana-host
    KIBANA_API_KEY=your-api-key
    KIBANA_SPACE=your-space
+   KIBANA_TAGS=your-tag
    ```
 
 3. Добавь исходные данные в `params.txt`:
@@ -63,8 +64,16 @@ example:12345
 ```text
 key         = cm_example_user_id
 value       = 12345
-tags        = ["cm", "example"]
+   tags        = ["your-tag", "example"]
 ```
+
+Базовые теги задаются в `config.env` через запятую:
+
+```text
+KIBANA_TAGS=your-tag,another-tag
+```
+
+Имя сайта из `params.txt` добавляется к ним автоматически.
 
 ## Дополнительные параметры запуска
 

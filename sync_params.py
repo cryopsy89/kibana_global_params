@@ -65,7 +65,7 @@ def load_user_ids(path):
 
 # --- Вспомогательные функции -------------------------------------------------
 
-def build_params(user_ids):
+def build_params(user_ids, base_tags):
     """Строит список параметров в формате Kibana Synthetics API."""
     result = []
     for site, uid in user_ids.items():
@@ -73,7 +73,7 @@ def build_params(user_ids):
         result.append({
             "key": key,
             "value": str(uid).strip(),
-            "tags": ["cm", site],
+            "tags": [*base_tags, site],
             "description": f"user_id для {site}",
         })
     return result
@@ -174,12 +174,16 @@ def main():
     space = args.space or os.environ.get("KIBANA_SPACE")
     kibana_url = os.environ.get("KIBANA_URL")
     api_key = os.environ.get("KIBANA_API_KEY")
+    base_tags = [tag.strip() for tag in os.environ.get("KIBANA_TAGS", "").split(",") if tag.strip()]
 
     if not args.dry_run and (not kibana_url or not api_key):
         print("Задай переменные окружения KIBANA_URL и KIBANA_API_KEY", file=sys.stderr)
         sys.exit(1)
+    if not base_tags:
+        print("Задай KIBANA_TAGS в config.env, например KIBANA_TAGS=team", file=sys.stderr)
+        sys.exit(1)
 
-    params = build_params(user_ids)
+    params = build_params(user_ids, base_tags)
     sync_params(kibana_url or "https://dry-run.invalid", api_key or "dry-run", params, dry_run=args.dry_run, space=space)
 
 
